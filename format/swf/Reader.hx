@@ -28,6 +28,7 @@
  * DAMAGE.
  */
 package format.swf;
+import haxe.io.Eof;
 import format.swf.Data;
 import format.swf.Constants;
 
@@ -968,7 +969,14 @@ class Reader {
 		if( f & 64 != 0 ) po.clipDepth = i.readUInt16();
 		if( f2 & 1 != 0 ) po.filters = readFilters();
 		if( f2 & 2 != 0 ) po.blendMode = readBlendMode();
-		if( f2 & 4 != 0 ) po.bitmapCache = i.readByte();
+		if( f2 & 4 != 0 ) {
+			try {
+				po.bitmapCache = i.readByte();
+			} catch (e: Eof) {
+				po.bitmapCache = 1;
+				// TODO: Flag exception for writing
+			}
+		}
 		if( f2 & 16 != 0 ) po.hasImage = true;
 		if( f & 128 != 0 ) po.events = readClipEvents();
 		return po;
